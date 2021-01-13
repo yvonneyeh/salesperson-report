@@ -1,28 +1,37 @@
 """Generate sales report showing total melons each salesperson sold."""
 
-# create empty lists for salespeople and melons sold
-salespeople = [] 
-melons_sold = []
+def get_melons_sold_by_salesperson(filename):
+    """ Return a dictionary of {salesperson_name : melons_sold}
+    """
+    mels_by_sales = {}  # create empty dictionary
 
-# open the file and name it file
-f = open('sales-report.txt')
+# create context manager, open the file and call it "f"
+# with = python closes file at the end of code block
+    with open(filename) as f:   
+        for line in f:      # loop through every line in the text file
+            line = line.rstrip()    # strip whitespace on right side of lines
+            
+            # separate entries by vertical bar, create a list of data and unpack its values
+            salesperson_name, total_dollars, melons_sold = line.split('|')  
+            
+            # salesperson = entries[0]    # 1st entry (index 0) is salesperson
+            # melons = int(entries[2])    # 3rd entry (index 2) is melons, convert to integer
 
-# loop through every line in the text file
-for line in f:
-    line = line.rstrip()    # strip whitespace on right side of lines
-    entries = line.split('|')   # create entries separated by vertical bar
+            if salesperson_name in mels_by_sales:      # if the person exists in the dictionary of salespeople
+                mels_by_sales[salesperson_name] += int(melons_sold)   # add to salesperson's total melons sold
 
-    salesperson = entries[0]    # 1st entry (index 0) is salesperson
-    melons = int(entries[2])    # 3rd entry (index 2) is melons, convert to integer
+            else:
+                mels_by_sales[salesperson_name] = int(melons_sold)     # if the person doesn't exist in the dictionary, add them
+    return mels_by_sales
 
-    if salesperson in salespeople:      # if the person exists in the list of salespeople
-        position = salespeople.index(salesperson)   # the position is the index in the list
+def print_sales_report(melons_sold_by_salesperson):
+    """ Print a report of salespeople and the total number of melons they've sold
 
-        melons_sold[position] += melons     # add 1 to melons_sold index postion every time you iterate
-    else:
-        salespeople.append(salesperson)     # if the person doesn't exist in the list, add them
-        melons_sold.append(melons)          # same for melons sold
+        Arguments:
+            melons_sold_by_salesperson (dict) = {salesperson_name : melons_sold}
+    """
+    for salesperson_name, melons_sold in melons_sold_by_salesperson.items():
+        print(f'{salesperson_name} sold {melons_sold} melons')
 
 
-for i in range(len(salespeople)):           # for each number in the range of the length of the salespeople list
-    print(f'{salespeople[i]} sold {melons_sold[i]} melons')     #print this statement
+print_sales_report(get_melons_sold_by_salesperson('sales-report.txt'))
